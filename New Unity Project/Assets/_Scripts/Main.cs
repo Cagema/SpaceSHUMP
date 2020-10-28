@@ -6,11 +6,14 @@ using UnityEngine.SceneManagement;
 public class Main : MonoBehaviour
 {
     static public Main S;
+    static Dictionary<WeaponType, WeaponDefinition> WEAP_DICT;
 
     [Header("Set in Inspector")]
     public GameObject[] prefabEnemies;
     public float enemySpawnPerSecond = 0.5f;
     public float enemyDefaultPadding = 1.5f;
+
+    public WeaponDefinition[] WeaponDefinitions;
 
     private BoundsCheck bndCheck;
 
@@ -19,6 +22,13 @@ public class Main : MonoBehaviour
         S = this;
         bndCheck = GetComponent<BoundsCheck>();
         Invoke("SpawnEnemy", 1f / enemySpawnPerSecond);
+
+        // Словарь с ключами типа WeaponType
+        WEAP_DICT = new Dictionary<WeaponType, WeaponDefinition>();
+        foreach (WeaponDefinition item in WeaponDefinitions)
+        {
+            WEAP_DICT[item.type] = item;
+        }
     }
 
     public void SpawnEnemy()
@@ -54,5 +64,23 @@ public class Main : MonoBehaviour
     public void Restart()
     {
         SceneManager.LoadScene("SampleScene");
+    }
+
+
+    /// <summary>
+    /// Статическая функция, возвращающая WeaponDefinition из статического защищенного поля WEAP_DICT класса Main
+    /// </summary>
+    /// <param name="wt">Тип оружия, для которого требуется получить WeaponDefinition</param>
+    /// <returns>Экземпляр WeaponDefinition для указанного типа оружия или, если его нет, новый экземпляр с типом none</returns>
+    static public WeaponDefinition GetWeaponDefinition (WeaponType wt)
+    {
+        // Проверка на наличие ключа
+        // Если ключ есть, возвращаем его значение
+        if (WEAP_DICT.ContainsKey(wt))
+        {
+            return WEAP_DICT[wt];
+        }
+        // Если ключа нет, создаем пустой экземпляр
+        return new WeaponDefinition();
     }
 }
