@@ -50,15 +50,28 @@ public class Enemy : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         GameObject otherGO = collision.gameObject;
+        switch (otherGO.tag)
+        {
+            case "ProjectileHero":
+                Projectile p = otherGO.GetComponent<Projectile>();
+                // Если вражеский корабль за границами экрана, не наносить ему повреждений
+                if (!bndCheck.isOnScreen)
+                {
+                    Destroy(otherGO);
+                    break;
+                }
 
-        if (otherGO.tag == "ProjectileHero")
-        {
-            Destroy(otherGO);
-            Destroy(gameObject);
-        }
-        else
-        {
-            print("Enemy hit by non-projectileHero: " + otherGO.name);
+                health -= Main.GetWeaponDefinition(p.type).damageOnHit;
+                if (health <= 0)
+                {
+                    Destroy(this.gameObject);
+                }
+                Destroy(otherGO);
+                break;
+
+            default:
+                print("Enemy hit by non-ProjectileHero: " + otherGO.name);
+                break;
         }
     }
 }
